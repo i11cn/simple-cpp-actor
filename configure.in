@@ -1,0 +1,30 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.59)
+AC_INIT(actor, 0.9)
+AC_CONFIG_SRCDIR([src/actor.cpp])
+AM_INIT_AUTOMAKE(foreign)
+
+# Checks for programs.
+AC_PROG_CXX
+AC_LANG_CPLUSPLUS
+
+# Checks for libraries.
+AC_PROG_LIBTOOL
+AC_CHECK_LIB(nsl, gethostbyname)
+AC_CHECK_LIB(socket, connect)
+
+# Checks for header files.
+AC_CHECK_HEADERS([])
+
+# Checks for typedefs, structures, and compiler characteristics.
+
+# Checks for library functions.
+
+AC_CONFIG_FILES([Makefile
+                 src/Makefile
+                 examples/Makefile
+                 test/Makefile
+                 net/Makefile])
+AC_OUTPUT

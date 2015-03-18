@@ -1,0 +1,21 @@
+#/bin/sh
+
+#rm -rf aclocal.m4 autom4te.cache/ config.* configure depcomp install-sh libtool ltmain.sh Makefile Makefile.in missing */Makefile */Makefile.in include/snower/config.h include/snower/config.h.in
+rm -rf aclocal.m4 autom4te.cache/ config.* configure depcomp install-sh libtool ltmain.sh Makefile Makefile.in missing */Makefile src/Makefile.in test/Makefile.in
+
+#cur_dir=`pwd`/`dirname $0`
+#cd ${cur_dir}/gtest-1.7.0/
+#./configure && make -j
+#cd ${cur_dir}
+
+#libtoolize --force --copy && \
+#autoheader && \
+#aclocal-1.10 $ACLOCAL_FLAGS && \
+#automake-1.10 --include-deps --add-missing --foreign --copy && \
+#autoconf
+
+libtoolize --force --copy && \
+aclocal $ACLOCAL_FLAGS && \
+automake --include-deps --add-missing --foreign --copy && \
+autoconf
+
