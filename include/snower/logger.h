@@ -102,6 +102,15 @@ public:
         ss << endl;
         do_write(ss.str());
     }
+    template<typename... Types>
+    void writef(const std::string& format, const log_datas& ld, Types... args)
+    {
+        using namespace std;
+        stringstream ss;
+        log_to_stream(ss, ld, format.c_str(), forward<Types>(args)...);
+        ss << endl;
+        do_write(ss.str());
+    }
 
 protected:
     virtual void do_write(const std::string& log_msg) = 0;
@@ -277,6 +286,14 @@ private:
 #define ERROR(...) log(__FILE__, __FUNCTION__, __LINE__, logger::LEVEL_ERROR, ##__VA_ARGS__)
 #define FATAL(...) log(__FILE__, __FUNCTION__, __LINE__, logger::LEVEL_FATAL, ##__VA_ARGS__)
 
+#define TRACEF(...) logf(__FILE__, __FUNCTION__, __LINE__, logger::LEVEL_TRACE, ##__VA_ARGS__)
+#define DEBUGF(...) logf(__FILE__, __FUNCTION__, __LINE__, logger::LEVEL_DEBUG, ##__VA_ARGS__)
+#define INFOF(...) logf(__FILE__, __FUNCTION__, __LINE__, logger::LEVEL_INFO, ##__VA_ARGS__)
+#define LOGF(...) logf(__FILE__, __FUNCTION__, __LINE__, logger::LEVEL_LOG, ##__VA_ARGS__)
+#define WARNF(...) logf(__FILE__, __FUNCTION__, __LINE__, logger::LEVEL_WARN, ##__VA_ARGS__)
+#define ERRORF(...) logf(__FILE__, __FUNCTION__, __LINE__, logger::LEVEL_ERROR, ##__VA_ARGS__)
+#define FATALF(...) logf(__FILE__, __FUNCTION__, __LINE__, logger::LEVEL_FATAL, ##__VA_ARGS__)
+
 class logger final
 {
 public:
@@ -337,6 +354,42 @@ public:
                 for(log_appender_ref& a : m_appenders)
                 {
                     a->write(ld, forward<Types>(args)...);
+                }
+            }
+        }
+    }
+    template<typename... Types>
+    void logf(const char* file, const char* func, int line, int level, const std::string& format, Types... args)
+    {
+        using namespace std;
+        if(level > LEVEL_NONE)
+        {
+            level = LEVEL_NONE;
+        }
+        if(level < LEVEL_ALL)
+        {
+            level = LEVEL_ALL;
+        }
+        if(m_enable && level >= m_level && level <= m_top_level)
+        {
+            log_datas ld;
+            ld.emplace_back([file](ostream& os) { os << file; });
+            ld.emplace_back([func](ostream& os) { os << func; });
+            ld.emplace_back([line](ostream& os) { os << line; });
+            ld.emplace_back([this](ostream& os) { os << this->m_logger_name; });
+            string level_name = level_to_name(level);
+            ld.emplace_back([level_name](ostream& os) { os << level_name; });
+            auto pid = getpid();
+            ld.emplace_back([pid](ostream& os) { os << pid; });
+            auto tid = this_thread::get_id();
+            ld.emplace_back([tid](ostream& os) { os << tid; });
+            auto now = m_get_time_func();
+            ld.emplace_back([now](ostream& os) { os << now; });
+            {
+                lock_guard<mutex> locker(m_appenders_mutex);
+                for(log_appender_ref& a : m_appenders)
+                {
+                    a->writef(format, ld, forward<Types>(args)...);
                 }
             }
         }
