@@ -42,11 +42,17 @@ void log_to_stream(std::ostream& os, const log_datas& ld, const char* format, T 
                 case 'F':
                     ld[0](os); break;
 
-                case 'T':
-                    ld[7](os); break;
-
                 case 'f':
                     ld[1](os); break;
+
+                case 'l':
+                    ld[2](os); break;
+
+                case 'N':
+                    ld[3](os); break;
+
+                case 'L':
+                    ld[4](os); break;
 
                 case 'p':
                     ld[5](os); break;
@@ -54,14 +60,8 @@ void log_to_stream(std::ostream& os, const log_datas& ld, const char* format, T 
                 case 't':
                     ld[6](os); break;
 
-                case 'l':
-                    ld[2](os); break;
-
-                case 'L':
-                    ld[4](os); break;
-
-                case 'N':
-                    ld[3](os); break;
+                case 'T':
+                    ld[7](os); break;
 
                 case '%':
                     os << '%'; break;
@@ -302,7 +302,7 @@ public:
     static constexpr int LEVEL_DEBUG = 20;
     static constexpr int LEVEL_INFO = 30;
     static constexpr int LEVEL_LOG = 40;
-    static constexpr int LEVEL_WARN = 500;
+    static constexpr int LEVEL_WARN = 50;
     static constexpr int LEVEL_ERROR = 60;
     static constexpr int LEVEL_FATAL = 70;
     static constexpr int LEVEL_NONE = 100;
